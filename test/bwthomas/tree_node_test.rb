@@ -1,12 +1,11 @@
+require 'test-unit'
 require 'simplecov'
 SimpleCov.start
 
-$:.unshift File.join(File.dirname(__FILE__))
-
-require 'test/unit'
-require 'tree_node'
+require 'bwthomas'
 
 class TreeNodeInitializationTest < Test::Unit::TestCase
+  include Bwthomas
 
   def setup
     @tree_node = TreeNode.new
@@ -33,6 +32,7 @@ class TreeNodeInitializationTest < Test::Unit::TestCase
 end
 
 class TreeNodeAttrAccessorTest < Test::Unit::TestCase
+  include Bwthomas
 
   def setup
     @tree_node = TreeNode.new
@@ -69,6 +69,7 @@ class TreeNodeAttrAccessorTest < Test::Unit::TestCase
 end
 
 class TreeNodeChildAssignmentTest < Test::Unit::TestCase
+  include Bwthomas
 
   def setup
     @tree_node  = TreeNode.new
@@ -101,6 +102,7 @@ class TreeNodeChildAssignmentTest < Test::Unit::TestCase
 end
 
 class TreeNodeParentAssignmentTest < Test::Unit::TestCase
+  include Bwthomas
 
   def setup
     @tree_node  = TreeNode.new
