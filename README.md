@@ -10,9 +10,9 @@ When you're done, please zip up this directory and send it back to us. Thanks!
 1.  ~~Make any changes necessary to be able to run the tests by running
     `ruby tree_node_test.rb` at the command line. Fix any failing tests.~~
 
-2.  Another developer has partially implemented TreeNode#name and
+2.  ~~Another developer has partially implemented TreeNode#name and
     TreeNode#name=, but failed to write any tests for that functionality. Add
-    some test coverage to those methods.
+    some test coverage to those methods.~~
 
 3.  Add a predicate instance method to TreeNode that takes a single TreeNode
     instance as an argument. The method should return whether the supplied
