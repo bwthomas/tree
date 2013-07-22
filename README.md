@@ -14,9 +14,9 @@ When you're done, please zip up this directory and send it back to us. Thanks!
     TreeNode#name=, but failed to write any tests for that functionality. Add
     some test coverage to those methods.~~
 
-3.  Add a predicate instance method to TreeNode that takes a single TreeNode
+3.  ~~Add a predicate instance method to TreeNode that takes a single TreeNode
     instance as an argument. The method should return whether the supplied
-    instance is a child node of the receiver.
+    instance is a child node of the receiver.~~
 
 4.  A bug has been detected in the code where a child TreeNode that has a
     parent is assigned to a new parent node: the child node is still included

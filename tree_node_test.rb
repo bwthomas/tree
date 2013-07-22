@@ -76,13 +76,27 @@ class TreeNodeChildAssignmentTest < Test::Unit::TestCase
     @tree_node.add_child(@child_node)
   end
 
+  def test_parent_of
+    assert_equal( true, @tree_node.parent_of?(@child_node),
+                  'should respond true as parent of child node' )
+    assert_equal( false, @tree_node.parent_of?(7),
+                  'should respond false when not parent of child node' )
+  end
+
   def test_children_count
     assert_equal( 1, @tree_node.children_count,
                   'should have a single child when one is added' )
   end
 
   def test_parent_assignment
-    assert_equal(@tree_node, @child_node.parent)
+    assert_equal( @tree_node, @child_node.parent,
+                  'should assign parent to child attribute when possible')
+
+    @tree_node.add_child(7)
+
+    assert_equal( true, @tree_node.parent_of?(7),
+                  'should accomodate non-TreeNode children' )
   end
+
 
 end

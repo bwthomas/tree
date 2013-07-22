@@ -7,8 +7,13 @@ class TreeNode
   end
 
   def add_child(child)
-    child.parent = self
+    child.parent = self if child.respond_to?(:parent=)
     children << child
+  end
+
+  def parent_of?(child)
+    return false unless children.include?(child)
+    child.respond_to?(:parent) ? child.parent == self : true
   end
 
   def children_count
