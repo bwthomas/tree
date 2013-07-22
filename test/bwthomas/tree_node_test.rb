@@ -3,9 +3,9 @@ require 'simplecov'
 SimpleCov.start
 
 require 'bwthomas'
+include Bwthomas
 
 class TreeNodeInitializationTest < Test::Unit::TestCase
-  include Bwthomas
 
   def setup
     @tree_node = TreeNode.new
@@ -32,7 +32,6 @@ class TreeNodeInitializationTest < Test::Unit::TestCase
 end
 
 class TreeNodeAttrAccessorTest < Test::Unit::TestCase
-  include Bwthomas
 
   def setup
     @tree_node = TreeNode.new
@@ -58,18 +57,29 @@ class TreeNodeAttrAccessorTest < Test::Unit::TestCase
   def test_setting_children
     assert_empty(@tree_node.children)
 
-    children            = ['Donny', 'Marie']
+    children            = [TreeNode.new('Donny'), TreeNode.new('Marie')]
+    new_children        = ['Greg', 'Marsha']
+
     @tree_node.children = children
+
     assert_equal( children, @tree_node.children,
                   'should set children' )
     assert_equal( 2, @tree_node.children_count,
                   'should have two children when assigned to array with two elements' )
+    assert_equal( 1, children.map(&:parent).uniq.size,
+                  'should set same parent on all children nodes' )
+    assert_equal( @tree_node, children.map(&:parent).uniq.first,
+                  'should set parent on children nodes when possible' )
+
+    @tree_node.children = new_children
+
+    assert_equal( 0, children.map(&:parent).compact.size,
+                  'should unset parent on old children nodes' )
   end
 
 end
 
 class TreeNodeChildAssignmentTest < Test::Unit::TestCase
-  include Bwthomas
 
   def setup
     @tree_node  = TreeNode.new
@@ -102,7 +112,6 @@ class TreeNodeChildAssignmentTest < Test::Unit::TestCase
 end
 
 class TreeNodeParentAssignmentTest < Test::Unit::TestCase
-  include Bwthomas
 
   def setup
     @tree_node  = TreeNode.new
@@ -117,4 +126,37 @@ class TreeNodeParentAssignmentTest < Test::Unit::TestCase
                   'should remove child node from array of children' )
   end
 
+end
+
+class TreeNodeGraphTest < Test::Unit::TestCase
+
+  def setup
+    @root     = TreeNode.new('root')
+
+    trunks    = ['delta', 'gamma'].map {|l| TreeNode.new(l)}
+    trunks.each {|t| @root.add_child(t)}
+    @trunk = trunks.last
+
+    branches    = ['y0', 'z0', 'y1', 'z1'].map {|l| TreeNode.new(l)}
+    branches.each {|l| trunks[branches.index(l) % trunks.size].add_child(l)}
+    @branch = branches.last
+
+    baughs    = ('q'..'x').map {|l| TreeNode.new(l)}
+    baughs.each {|l| branches[baughs.index(l) % branches.size].add_child(l)}
+    @baugh = baughs.last
+
+    leaves    = ('a'..'p').map {|l| TreeNode.new(l)}
+    leaves.each {|l| baughs[leaves.index(l) % baughs.size].add_child(l)}
+    @leaf = leaves.last
+  end
+
+  def test_tree_node_lineage
+    assert_equal( [@root, @trunk, @branch, @baugh, @leaf], @leaf.lineage,
+                  'should traverse entire tree & produce a list' )
+  end
+
+  def test_tree_node_trace
+    assert_equal( 'root > gamma > z1 > x > p', @leaf.trace,
+                  'should traverse entire tree & produce a string' )
+  end
 end

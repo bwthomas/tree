@@ -1,11 +1,21 @@
 module Bwthomas
+  class TreeNodeError < StandardError; end
+
   class TreeNode
-    attr_reader   :parent
-    attr_accessor :name, :children
+    attr_reader   :parent, :children
+    attr_accessor :name
 
     def initialize(name=nil)
       @name       = name
       @children ||= []
+    end
+
+    def lineage
+      !!(parent) ? parent.lineage + [self] : [self]
+    end
+
+    def trace
+      lineage.map{|n| n.name || n.to_s}.join(" > ")
     end
 
     def add_child(child)
@@ -18,12 +28,27 @@ module Bwthomas
       child.respond_to?(:parent) ? child.parent == self : true
     end
 
-    def parent=(new)
-      old     = @parent
-      @parent = new
+    def parent=(newp)
+      if !!(newp)
+        msg   = "Error: '#{newp}' cannot parent '#{self}'"  unless newp.respond_to?(:children)
+        msg ||= "Error: '#{self}' is ancestor of '#{newp}'" if newp.lineage.include?(self)
+        raise TreeNodeError, msg unless msg.nil?
+      end
 
-      old.children.delete(self)     if old && old.children.any?
-      new.children     << self  unless new.children.include?(self)
+      oldp    = @parent
+      @parent = newp
+
+      oldp.children.delete(self)  if oldp && oldp.children && oldp.children.any?
+      newp.children     << self   if newp && newp.children
+      newp.children.uniq!     unless newp.nil?
+    end
+
+    def children=(newc)
+      oldc      = @children
+      @children = newc
+
+      oldc.each  { |orphan|  orphan.parent  = nil  if orphan.respond_to?(:parent=)  }
+      newc.each  { |adoptee| adoptee.parent = self if adoptee.respond_to?(:parent=)  }
     end
 
     def children_count
