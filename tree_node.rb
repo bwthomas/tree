@@ -1,18 +1,17 @@
 class TreeNode
-  attr :children
-  attr_reader :parent
-  attr_accessor :name
+  attr_accessor :name, :parent, :children
 
   def initialize(name=nil)
-    @name = name
+    @name       = name
+    @children ||= []
   end
 
   def add_child(child)
-    @children << child
+    child.parent = self
+    children << child
   end
 
-  def parent=(new_parent)
-    @parent = new_parent
+  def children_count
+    children.size
   end
-
 end

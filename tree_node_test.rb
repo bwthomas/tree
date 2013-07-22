@@ -1,4 +1,7 @@
+$:.unshift File.join(File.dirname(__FILE__))
+
 require 'test/unit'
+require 'tree_node'
 
 class TreeNodeTest < Test::Unit::TestCase
 
@@ -20,7 +23,7 @@ end
 class TreeNodeChildAssignmentTest < Test::Unit::TestCase
 
   def setup
-    @tree_node = TreeNode.new
+    @tree_node  = TreeNode.new
     @child_node = TreeNode.new
     @tree_node.add_child(@child_node)
   end
