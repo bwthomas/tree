@@ -98,5 +98,21 @@ class TreeNodeChildAssignmentTest < Test::Unit::TestCase
                   'should accomodate non-TreeNode children' )
   end
 
+end
+
+class TreeNodeParentAssignmentTest < Test::Unit::TestCase
+
+  def setup
+    @tree_node  = TreeNode.new
+    @child_node = TreeNode.new
+    @tree_node.add_child(@child_node)
+  end
+
+  def test_parent_assignment_removes_child_from_children
+    new_parent = TreeNode.new('my new pa-pa')
+    @child_node.parent = new_parent
+    assert_equal( false, @tree_node.children.include?(@child_node),
+                  'should remove child node from array of children' )
+  end
 
 end
