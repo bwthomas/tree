@@ -16,6 +16,15 @@ class TreeNodeInitializationTest < Test::Unit::TestCase
                   'should use parameter for name when created' )
   end
 
+  def test_uses_name_when_converting_to_string
+    node = TreeNode.new('lorem')
+    assert_equal( "Bwthomas::TreeNode.new('lorem')", node.to_s,
+                  'should convert to a meaningful string when name is present' )
+
+    assert_equal( "Bwthomas::TreeNode.new(nil)", @tree_node.to_s,
+                  'should convert to a meaningful string when name is not present' )
+  end
+
   def test_has_no_name_by_default_when_created
     assert_nil(@tree_node.name)
   end
@@ -130,6 +139,24 @@ end
 
 class TreeNodeGraphTest < Test::Unit::TestCase
 
+  ## Visualization really helps.
+  ## (20130722, BWT)
+  #                           root
+  #                          /    \
+  #                        /        \
+  #                      /            \
+  #                    /                \
+  #                  /                    \
+  #                /                        \
+  #           delta                          gamma
+  #         /       \                      /       \
+  #       /           \                  /           \
+  #     y0             z0              y1              z1
+  #   /    \         /     \         /     \         /    \
+  #  q      r       s       t       u       v       w       x
+  # / \    / \     / \     / \     / \     / \     / \     / \
+  # a  b  c   d   e   f   g   h   i   j   k   l   m   n   o   p
+
   def setup
     @root     = TreeNode.new('root')
 
@@ -148,15 +175,32 @@ class TreeNodeGraphTest < Test::Unit::TestCase
     leaves    = ('a'..'p').map {|l| TreeNode.new(l)}
     leaves.each {|l| baughs[leaves.index(l) % baughs.size].add_child(l)}
     @leaf = leaves.last
+
+    t = TreeNode.new('A')
+    t.children  = [TreeNode.new('B'), TreeNode.new('C')]
+    t.children.first.children = [TreeNode.new('D'), TreeNode.new('E')]
+    t.children.first.children.last.children = [TreeNode.new('F'), TreeNode.new('G')]
+
+    @given_example = t
+
+    @traversal = %w(delta y0 q a i u e m y1 s c k w g o gamma z0 r b j v f n z1 t d l x h p)
   end
 
   def test_tree_node_lineage
     assert_equal( [@root, @trunk, @branch, @baugh, @leaf], @leaf.lineage,
-                  'should traverse entire tree & produce a list' )
+                  'should traverse path to root node & produce a list' )
   end
 
   def test_tree_node_trace
     assert_equal( 'root > gamma > z1 > x > p', @leaf.trace,
-                  'should traverse entire tree & produce a string' )
+                  'should traverse path to root node & produce a string' )
+  end
+
+  def test_tree_node_search
+    assert_equal( @traversal, @root.search.map(&:name),
+                  'should traverse entire tree & produce a list of nodes' )
+
+    assert_equal( %w(B D E F G C), @given_example.search.map(&:name),
+                  'should traverse entire tree & produce a list of nodes' )
   end
 end

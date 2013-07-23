@@ -18,6 +18,16 @@ module Bwthomas
       lineage.map{|n| n.name || n.to_s}.join(" > ")
     end
 
+    def traverse(stack=[], &block)
+      children.each do |child|
+        stack << child
+        yield child if block_given?
+        child.traverse stack, &block if child.respond_to?(:children) && child.respond_to?(:traverse)
+      end
+      stack
+    end
+    alias_method :search, :traverse
+
     def add_child(child)
       child.parent = self       if child.respond_to?(:parent=)
       children    << child  unless children.include?(child)
@@ -54,5 +64,11 @@ module Bwthomas
     def children_count
       children.size
     end
+
+    def to_s
+      param = !!(name) ? "'#{name}'" : 'nil'
+      "#{self.class}.new(#{param})"
+    end
+
   end
 end
